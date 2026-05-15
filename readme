@@ -1,0 +1,169 @@
+# PulseBoard
+
+A full-stack real-time polling application built with the MERN stack. Users can create polls, share them via a unique link, collect responses, and view live analytics — all without requiring respondents to log in.
+
+---
+
+## Features
+
+- JWT-based authentication (register, login, protected routes)
+- Create polls with multiple questions, custom options, and expiry dates
+- Mandatory question enforcement on submission
+- Anonymous and authenticated response modes
+- Unique share token per poll for public access
+- Real-time analytics updates via Socket.io
+- Bar chart visualizations using Recharts
+- Publish/unpublish poll control
+- Auto-expiry based on a configurable date
+
+---
+
+## Tech Stack
+
+**Frontend**
+- React (Vite)
+- Tailwind CSS
+- React Router
+- Axios
+- Recharts
+- Socket.io Client
+- React Hot Toast
+
+**Backend**
+- Node.js
+- Express
+- MongoDB with Mongoose
+- Socket.io
+- JWT (jsonwebtoken)
+- bcryptjs
+
+---
+
+## Project Structure
+
+```
+PulseBoard/
+├── server/
+│   └── src/
+│       ├── config/db.js
+│       ├── controllers/
+│       ├── middleware/auth.js
+│       ├── models/
+│       ├── routes/
+│       ├── utils/generateToken.js
+│       └── index.js
+└── client/
+    └── src/
+        ├── context/AuthContext.jsx
+        ├── pages/
+        ├── services/
+        └── index.css
+```
+
+---
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js v18 or higher
+- A MongoDB Atlas account (or local MongoDB instance)
+
+### Clone the repository
+
+```bash
+git clone https://github.com/divaaditi101-dev/PulseBoard.git
+cd PulseBoard
+```
+
+### Backend setup
+
+```bash
+cd server
+npm install
+```
+
+Create a `.env` file inside the `server/` directory:
+
+```
+MONGO_URI=your_mongodb_atlas_uri
+JWT_SECRET=your_jwt_secret
+CLIENT_URL=http://localhost:5173
+PORT=5001
+```
+
+Start the backend:
+
+```bash
+npm run dev
+```
+
+### Frontend setup
+
+Open a new terminal:
+
+```bash
+cd client
+npm install
+npm run dev
+```
+
+The frontend runs at `http://localhost:5173` (or `5174` if that port is in use).
+
+---
+
+## Environment Variables
+
+### Server (`server/.env`)
+
+| Variable | Description |
+|---|---|
+| `MONGO_URI` | MongoDB connection string |
+| `JWT_SECRET` | Secret key for signing JWT tokens |
+| `CLIENT_URL` | Frontend origin for CORS (e.g. `http://localhost:5173`) |
+| `PORT` | Port for the Express server (default: 5001) |
+
+### Client (`client/.env`)
+
+| Variable | Description |
+|---|---|
+| `VITE_API_URL` | Backend API base URL (e.g. `http://localhost:5001/api`) |
+
+---
+
+## Deployment
+
+- **Backend** — deployed on [Render](https://render.com)  
+  Root directory: `server` | Start command: `node src/index.js`
+
+- **Frontend** — deployed on [Vercel](https://vercel.com)  
+  Root directory: `client` | Framework: Vite
+
+After deploying, set `CLIENT_URL` on Render to your Vercel production URL, and set `VITE_API_URL` on Vercel to your Render backend URL.
+
+---
+
+## API Overview
+
+| Method | Endpoint | Description | Auth |
+|---|---|---|---|
+| POST | `/api/auth/register` | Register a new user | No |
+| POST | `/api/auth/login` | Login and receive JWT | No |
+| POST | `/api/polls` | Create a new poll | Yes |
+| GET | `/api/polls/my` | Get all polls by logged-in user | Yes |
+| GET | `/api/polls/token/:token` | Get a poll by share token | No |
+| POST | `/api/polls/:id/respond` | Submit a response | No |
+| GET | `/api/polls/:id/analytics` | Get poll analytics | Yes |
+| PATCH | `/api/polls/:id/publish` | Publish a poll | Yes |
+| DELETE | `/api/polls/:id` | Delete a poll | Yes |
+
+---
+
+## Design
+
+- Color scheme: Navy (`#0f1f3d`) and Green (`#2ecc8f`)
+- Fonts: Syne (headings), DM Sans (body)
+- Dark navy sidebar with light main content area
+
+---
+
