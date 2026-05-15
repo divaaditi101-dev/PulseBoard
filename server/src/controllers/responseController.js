@@ -1,5 +1,5 @@
-import Response from '../models/Response.js'
-import Poll from '../models/Poll.js'
+import Response from '../models/response.js'
+import Poll from '../models/poll.js'
 
 // @POST /api/responses/:token
 export const submitResponse = async (req, res) => {

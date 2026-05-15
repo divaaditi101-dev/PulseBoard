@@ -1,4 +1,4 @@
-import Poll from '../models/Poll.js'
+import Poll from '../models/poll.js'
 
 // @POST /api/polls
 export const createPoll = async (req, res) => {
