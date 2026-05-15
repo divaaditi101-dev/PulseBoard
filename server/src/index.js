@@ -37,10 +37,12 @@ const io = new Server(httpServer, {
 app.set('io', io);
 
 // Middlewares — must come before routes
+// Middlewares — must come before routes
 app.use(cors({
   origin: allowedOrigins,
   credentials: true,
 }));
+app.options('*', cors({ origin: allowedOrigins, credentials: true })); // ADD THIS
 app.use(express.json());
 
 // Routes
