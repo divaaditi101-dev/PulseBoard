@@ -1,18 +1,19 @@
 import User from '../models/user.js'
 import generateToken from '../utils/generateToken.js'
 
+const normalizeEmail = (email = '') => email.trim().toLowerCase()
+
 // @POST /api/auth/register
 export const register = async (req, res) => {
     try {
-        const { name, email, password } = req.body
+        const { name, password } = req.body
+        const email = normalizeEmail(req.body.email)
 
-        // Check if user already exists
         const existingUser = await User.findOne({ email })
         if (existingUser) {
             return res.status(400).json({ message: 'User already exists' })
         }
 
-        // Create new user
         const user = await User.create({ name, email, password })
 
         res.status(201).json({
@@ -29,12 +30,11 @@ export const register = async (req, res) => {
 // @POST /api/auth/login
 export const login = async (req, res) => {
     try {
-        const { email, password } = req.body
+        const { password } = req.body
+        const email = normalizeEmail(req.body.email)
 
-        // Find user by email
         const user = await User.findOne({ email })
 
-        // Check user and password
         if (!user || !(await user.matchPassword(password))) {
             return res.status(401).json({ message: 'Invalid email or password' })
         }

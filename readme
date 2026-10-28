@@ -25,9 +25,6 @@ A full-stack real-time polling application built with the MERN stack. Users can 
 - Tailwind CSS
 - React Router
 - Axios
-- Recharts
-- Socket.io Client
-- React Hot Toast
 
 **Backend**
 - Node.js
