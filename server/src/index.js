@@ -5,7 +5,7 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import { createServer } from 'http'
 import { Server } from 'socket.io'
-import connectDB from './config/db.js'
+import connectDB, { getDbStatus } from './config/db.js'
 import authRoutes from './routes/authRoutes.js'
 import pollRoutes from './routes/pollRoutes.js'
 import responseRoutes from './routes/responseRoutes.js'
@@ -63,6 +63,15 @@ app.use('/api/responses', responseRoutes)
 
 app.get('/', (req, res) => {
   res.json({ message: 'PulseBoard API is running!' })
+})
+
+app.get('/api/health', (req, res) => {
+  const db = getDbStatus()
+  res.json({
+    status: 'ok',
+    database: db.state,
+    dbError: db.error
+  })
 })
 
 io.on('connection', (socket) => {
