@@ -6,17 +6,20 @@ import toast from 'react-hot-toast'
 import { io } from 'socket.io-client'
 
 const AnalyticsPage = () => {
-const { pollId } = useParams()
-const navigate = useNavigate()
+  const { pollId } = useParams()
+  const navigate = useNavigate()
   const [analytics, setAnalytics] = useState(null)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
     fetchAnalytics()
 
-    const socket = io('http://localhost:5001')
+    const socketUrl = import.meta.env.VITE_SOCKET_URL ||
+      (import.meta.env.VITE_API_URL ? new URL(import.meta.env.VITE_API_URL).origin : 'http://localhost:5001')
+    const socket = io(socketUrl)
+
     socket.emit('joinPoll', pollId)
-    socket.on('newResponse', (data) => {
+    socket.on('newResponse', () => {
       fetchAnalytics()
     })
     return () => socket.disconnect()

@@ -3,7 +3,6 @@ import { useParams } from 'react-router-dom'
 import { getPollByToken, submitResponse } from "../services/pollService.js"
 import { useAuth } from '../context/AuthContext'
 import toast from 'react-hot-toast'
-import io from 'socket.io-client'
 
 const PollPage = () => {
   const { token } = useParams()
@@ -16,6 +15,9 @@ const PollPage = () => {
 
   useEffect(() => {
     fetchPoll()
+    if (token && localStorage.getItem(`submitted_poll_${token}`)) {
+      setSubmitted(true)
+    }
   }, [token])
 
   const fetchPoll = async () => {
@@ -47,6 +49,7 @@ const PollPage = () => {
     setSubmitting(true)
     try {
       await submitResponse(token, formattedAnswers)
+      localStorage.setItem(`submitted_poll_${token}`, 'true')
       setSubmitted(true)
       toast.success('Response submitted!')
     } catch (error) {

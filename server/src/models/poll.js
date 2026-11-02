@@ -1,4 +1,3 @@
-import e from "express";
 import mongoose from "mongoose";
 import { v4 as uuidv4 } from 'uuid';
 
@@ -11,9 +10,7 @@ const optionSchema = new mongoose.Schema({
     count: {
         type: Number,
         default: 0
-
     }
-
 })
 
 const questionSchema = new mongoose.Schema({
@@ -28,6 +25,7 @@ const questionSchema = new mongoose.Schema({
         default: true
     }
 })
+
 const pollSchema = new mongoose.Schema({
     title: {
         type: String,
@@ -37,7 +35,6 @@ const pollSchema = new mongoose.Schema({
     description: {
         type: String,
         trim: true  
-
     },
     creator: {
         type: mongoose.Schema.Types.ObjectId,
@@ -48,7 +45,6 @@ const pollSchema = new mongoose.Schema({
     isAnonymous: {
         type: Boolean,
         default: false
-
     },
     expiresAt: {    
         type: Date,
@@ -56,7 +52,7 @@ const pollSchema = new mongoose.Schema({
     },
     isPublished: {
         type: Boolean,
-        required: false
+        default: false
     },
     isActive: {
         type: Boolean,
@@ -76,4 +72,5 @@ const pollSchema = new mongoose.Schema({
 }, {
     timestamps: true    
 })
-export default mongoose.model('Poll',pollSchema)
+
+export default mongoose.model('Poll', pollSchema)

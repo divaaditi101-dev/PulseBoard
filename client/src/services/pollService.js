@@ -14,25 +14,26 @@ export const getMyPolls = async () => {
 
 // Get a single poll by its public share token (no auth needed)
 export const getPollByToken = async (token) => {
-  const { data } = await api.get(`/polls/token/${token}`);
+  const { data } = await api.get(`/polls/${token}`);
   return data;
 };
 
 // Submit a response to a poll
-export const submitResponse = async (pollId, responseData) => {
-  const { data } = await api.post(`/polls/${pollId}/respond`, responseData);
+export const submitResponse = async (token, answers) => {
+  const payload = Array.isArray(answers) ? { answers } : answers;
+  const { data } = await api.post(`/responses/${token}`, payload);
   return data;
 };
 
 // Get analytics for a poll
 export const getAnalytics = async (pollId) => {
-  const { data } = await api.get(`/polls/${pollId}/analytics`);
+  const { data } = await api.get(`/responses/${pollId}/analytics`);
   return data;
 };
 
-// Publish a poll (make it live)
+// Publish a poll (make it live / close & publish results)
 export const publishPoll = async (pollId) => {
-  const { data } = await api.patch(`/polls/${pollId}/publish`);
+  const { data } = await api.put(`/polls/${pollId}/publish`);
   return data;
 };
 
