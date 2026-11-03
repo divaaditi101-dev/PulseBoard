@@ -12,7 +12,7 @@ const CreatePollPage = () => {
     isAnonymous: false,
     expiresAt: '',
     questions: [
-      { text: '', isRequired: true, options: [{ text: '' }, { text: '' }] }
+      { text: '', isRequired: false, options: [{ text: '' }, { text: '' }] }
     ]
   })
 
@@ -47,7 +47,7 @@ const CreatePollPage = () => {
   const addQuestion = () => {
     setForm({
       ...form,
-      questions: [...form.questions, { text: '', isRequired: true, options: [{ text: '' }, { text: '' }] }]
+      questions: [...form.questions, { text: '', isRequired: false, options: [{ text: '' }, { text: '' }] }]
     })
   }
 
@@ -108,44 +108,35 @@ const CreatePollPage = () => {
             fontFamily: 'DM Sans', fontWeight: 600, fontSize: 15,
             textAlign: 'left'
           }}>
-          Dashboard
-        </button>
-        <button style={{
-          background: 'rgba(46,204,143,0.15)', border: 'none', cursor: 'pointer',
-          padding: '12px 16px', borderRadius: 10,
-          color: 'var(--green)',
-          fontFamily: 'DM Sans', fontWeight: 600, fontSize: 15,
-          textAlign: 'left'
-        }}>
-          Create Poll
+          Back to Dashboard
         </button>
       </div>
 
-      {/* Main */}
-      <div style={{ marginLeft: 260, flex: 1, padding: '40px 48px', maxWidth: 800 }}>
+      {/* Main Content */}
+      <div style={{ marginLeft: 260, flex: 1, padding: '40px 48px' }}>
         <h1 style={{ fontFamily: 'Syne', fontWeight: 800, fontSize: 32, color: 'var(--navy)', marginBottom: 8 }}>
-          Create a Poll
+          Create a New Poll
         </h1>
         <p style={{ color: 'var(--text-muted)', marginBottom: 40 }}>
-          Fill in the details below to create your poll
+          Set up your questions and share with your audience
         </p>
 
-        <form onSubmit={handleSubmit}>
-          {/* Basic Info */}
+        <form onSubmit={handleSubmit} style={{ maxWidth: 680 }}>
+          {/* Basic Details */}
           <div className="card" style={{ marginBottom: 24 }}>
-            <h2 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: 18, marginBottom: 24, color: 'var(--navy)' }}>
+            <h2 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: 18, marginBottom: 20, color: 'var(--navy)' }}>
               Poll Details
             </h2>
-            <div style={{ marginBottom: 20 }}>
+            <div style={{ marginBottom: 16 }}>
               <label style={{ display: 'block', fontWeight: 600, fontSize: 14, marginBottom: 8, color: 'var(--navy)' }}>
                 Poll Title *
               </label>
-              <input className="input" type="text" placeholder="e.g. Team Lunch Preferences"
+              <input className="input" type="text" placeholder="e.g. Team Lunch Location"
                 value={form.title} onChange={e => setForm({ ...form, title: e.target.value })} />
             </div>
-            <div style={{ marginBottom: 20 }}>
+            <div style={{ marginBottom: 16 }}>
               <label style={{ display: 'block', fontWeight: 600, fontSize: 14, marginBottom: 8, color: 'var(--navy)' }}>
-                Description (optional)
+                Description
               </label>
               <textarea className="input" placeholder="What is this poll about?"
                 rows={3} value={form.description}
@@ -196,11 +187,15 @@ const CreatePollPage = () => {
                 <h3 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: 16, color: 'var(--navy)' }}>
                   Question {qi + 1}
                 </h3>
-                <div style={{ display: 'flex', gap: 10, alignItems: 'center' }}>
-                  <label style={{ display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13, color: 'var(--text-muted)' }}>
+                <div style={{ display: 'flex', gap: 14, alignItems: 'center' }}>
+                  <label style={{
+                    display: 'flex', alignItems: 'center', gap: 8, cursor: 'pointer', fontSize: 13,
+                    color: question.isRequired ? '#e74c3c' : 'var(--text-muted)',
+                    fontWeight: question.isRequired ? 700 : 400
+                  }}>
                     <input type="checkbox" checked={question.isRequired}
                       onChange={e => updateQuestion(qi, 'isRequired', e.target.checked)} />
-                    Mandatory
+                    {question.isRequired ? 'Compulsory' : 'Optional'}
                   </label>
                   <button type="button" onClick={() => removeQuestion(qi)}
                     style={{

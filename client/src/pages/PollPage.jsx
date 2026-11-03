@@ -32,7 +32,14 @@ const PollPage = () => {
   }
 
   const handleSelect = (questionId, optionId) => {
-    setAnswers({ ...answers, [questionId]: optionId })
+    if (answers[questionId] === optionId) {
+      // Toggle off / deselect
+      const next = { ...answers }
+      delete next[questionId]
+      setAnswers(next)
+    } else {
+      setAnswers({ ...answers, [questionId]: optionId })
+    }
   }
 
   const handleSubmit = async () => {
@@ -43,6 +50,13 @@ const PollPage = () => {
         return
       }
     }
+
+    // Ensure at least one question is answered in total
+    if (Object.keys(answers).length === 0) {
+      toast.error('Please answer at least one question before submitting')
+      return
+    }
+
     const formattedAnswers = Object.entries(answers).map(([question, selectedOption]) => ({
       question, selectedOption
     }))
@@ -179,12 +193,30 @@ const PollPage = () => {
         {/* Questions */}
         {poll.questions.map((question, i) => (
           <div key={i} className="card" style={{ marginBottom: 20 }}>
-            <h3 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: 17, color: 'var(--navy)', marginBottom: 4 }}>
-              {question.text}
-              {question.isRequired && <span style={{ color: '#e74c3c', marginLeft: 4 }}>*</span>}
-            </h3>
-            <p style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 20 }}>
-              {question.isRequired ? 'Required' : 'Optional'} · Single choice
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 4 }}>
+              <h3 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: 17, color: 'var(--navy)' }}>
+                {question.text}
+                {question.isRequired ? (
+                  <span style={{ color: '#e74c3c', marginLeft: 4 }}>*</span>
+                ) : (
+                  <span style={{
+                    fontSize: 12, fontWeight: 500, color: 'var(--text-muted)',
+                    background: '#f0f2f5', padding: '2px 8px', borderRadius: 6, marginLeft: 8
+                  }}>Optional</span>
+                )}
+              </h3>
+              {answers[question._id] && !question.isRequired && (
+                <button type="button" onClick={() => handleSelect(question._id, answers[question._id])}
+                  style={{
+                    background: 'none', border: 'none', color: '#e74c3c',
+                    fontSize: 12, cursor: 'pointer', fontWeight: 600
+                  }}>
+                  Clear choice
+                </button>
+              )}
+            </div>
+            <p style={{ color: 'var(--text-muted)', fontSize: 12, marginBottom: 16 }}>
+              {question.isRequired ? 'Compulsory' : 'Optional · Click your selection again to deselect'}
             </p>
             <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
               {question.options.map((option, j) => {

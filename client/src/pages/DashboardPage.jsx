@@ -9,6 +9,7 @@ const DashboardPage = () => {
   const navigate = useNavigate()
   const [polls, setPolls] = useState([])
   const [loading, setLoading] = useState(true)
+  const [expandedPollId, setExpandedPollId] = useState(null)
 
   useEffect(() => {
     fetchPolls()
@@ -23,6 +24,10 @@ const DashboardPage = () => {
     } finally {
       setLoading(false)
     }
+  }
+
+  const toggleExpand = (pollId) => {
+    setExpandedPollId(prev => prev === pollId ? null : pollId)
   }
 
   const handleDelete = async (pollId) => {
@@ -170,52 +175,127 @@ const DashboardPage = () => {
           <div style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
             {polls.map(poll => {
               const status = getStatus(poll)
+              const isExpanded = expandedPollId === poll._id
               return (
-                <div key={poll._id} className="card" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <div style={{ flex: 1 }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
-                      <h3 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: 18, color: 'var(--navy)' }}>
-                        {poll.title}
-                      </h3>
-                      <span style={{
-                        background: status.bg, color: status.color,
-                        fontSize: 11, fontWeight: 700, padding: '3px 10px',
-                        borderRadius: 6, letterSpacing: '0.05em'
-                      }}>{status.label}</span>
+                <div key={poll._id} className="card" style={{ transition: 'all 0.2s ease' }}>
+                  {/* Poll Card Header */}
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <div
+                      onClick={() => toggleExpand(poll._id)}
+                      style={{ flex: 1, cursor: 'pointer' }}
+                      title="Click to view questions">
+                      <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 8 }}>
+                        <h3 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: 18, color: 'var(--navy)' }}>
+                          {poll.title}
+                        </h3>
+                        <span style={{
+                          background: status.bg, color: status.color,
+                          fontSize: 11, fontWeight: 700, padding: '3px 10px',
+                          borderRadius: 6, letterSpacing: '0.05em'
+                        }}>{status.label}</span>
+                        <span style={{
+                          fontSize: 12, color: 'var(--green-dark)', fontWeight: 600,
+                          background: 'var(--green-light)', padding: '2px 8px', borderRadius: 6
+                        }}>
+                          {isExpanded ? '▲ Hide Questions' : '▼ View Questions'}
+                        </span>
+                      </div>
+                      <div style={{ display: 'flex', gap: 24, color: 'var(--text-muted)', fontSize: 13 }}>
+                        <span>{poll.questions?.length} questions</span>
+                        <span>{poll.totalResponses || 0} responses</span>
+                        <span>Expires {new Date(poll.expiresAt).toLocaleDateString()}</span>
+                        <span>{poll.isAnonymous ? 'Anonymous' : 'Authenticated'}</span>
+                      </div>
                     </div>
-                    <div style={{ display: 'flex', gap: 24, color: 'var(--text-muted)', fontSize: 13 }}>
-                      <span>{poll.questions?.length} questions</span>
-                      <span>{poll.totalResponses || 0} responses</span>
-                      <span>Expires {new Date(poll.expiresAt).toLocaleDateString()}</span>
-                      <span>{poll.isAnonymous ? 'Anonymous' : 'Authenticated'}</span>
-                    </div>
-                  </div>
-                  <div style={{ display: 'flex', gap: 10, marginLeft: 24 }}>
-                    <button className="btn-secondary" style={{ padding: '8px 16px', fontSize: 13 }}
-                      onClick={() => copyLink(poll.shareToken)}>
-                      Copy Link
-                    </button>
-                    <button className="btn-secondary" style={{ padding: '8px 16px', fontSize: 13 }}
-                      onClick={() => navigate(`/analytics/${poll._id}`)}>
-                      Analytics
-                    </button>
-                    {!poll.isPublished && (
-                      <button className="btn-primary" style={{ padding: '8px 16px', fontSize: 13 }}
-                        onClick={() => handlePublish(poll._id)}>
-                        Publish
+                    <div style={{ display: 'flex', gap: 10, marginLeft: 24 }}>
+                      <button className="btn-secondary" style={{ padding: '8px 16px', fontSize: 13 }}
+                        onClick={() => copyLink(poll.shareToken)}>
+                        Copy Link
                       </button>
-                    )}
-                    <button
-                      onClick={() => handleDelete(poll._id)}
-                      style={{
-                        background: '#fdeaea', color: '#e74c3c',
-                        border: 'none', padding: '8px 16px',
-                        borderRadius: 10, cursor: 'pointer',
-                        fontWeight: 600, fontSize: 13
-                      }}>
-                      Delete
-                    </button>
+                      <button className="btn-secondary" style={{ padding: '8px 16px', fontSize: 13 }}
+                        onClick={() => navigate(`/analytics/${poll._id}`)}>
+                        Analytics
+                      </button>
+                      {!poll.isPublished && (
+                        <button className="btn-primary" style={{ padding: '8px 16px', fontSize: 13 }}
+                          onClick={() => handlePublish(poll._id)}>
+                          Publish
+                        </button>
+                      )}
+                      <button
+                        onClick={() => handleDelete(poll._id)}
+                        style={{
+                          background: '#fdeaea', color: '#e74c3c',
+                          border: 'none', padding: '8px 16px',
+                          borderRadius: 10, cursor: 'pointer',
+                          fontWeight: 600, fontSize: 13
+                        }}>
+                        Delete
+                      </button>
+                    </div>
                   </div>
+
+                  {/* Expanded Questions Detail */}
+                  {isExpanded && (
+                    <div style={{ marginTop: 20, paddingTop: 20, borderTop: '1px solid var(--border)' }}>
+                      {poll.description && (
+                        <p style={{ color: 'var(--text-muted)', fontSize: 14, marginBottom: 16 }}>
+                          {poll.description}
+                        </p>
+                      )}
+                      <h4 style={{ fontFamily: 'Syne', fontWeight: 700, fontSize: 14, color: 'var(--navy)', marginBottom: 12 }}>
+                        Poll Questions & Options:
+                      </h4>
+                      <div style={{ display: 'flex', flexDirection: 'column', gap: 12 }}>
+                        {poll.questions?.map((q, qi) => (
+                          <div key={qi} style={{
+                            background: 'var(--bg)', borderRadius: 10, padding: '14px 18px',
+                            border: '1px solid var(--border)'
+                          }}>
+                            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 10 }}>
+                              <span style={{ fontWeight: 700, fontSize: 14, color: 'var(--navy)' }}>
+                                {qi + 1}. {q.text}
+                              </span>
+                              <span style={{
+                                fontSize: 11, fontWeight: 700, padding: '2px 8px', borderRadius: 4,
+                                background: q.isRequired ? '#fdeaea' : '#e8faf3',
+                                color: q.isRequired ? '#e74c3c' : 'var(--green-dark)'
+                              }}>
+                                {q.isRequired ? 'Compulsory' : 'Optional'}
+                              </span>
+                            </div>
+                            <div style={{ display: 'flex', flexWrap: 'wrap', gap: 8 }}>
+                              {q.options?.map((opt, oi) => (
+                                <span key={oi} style={{
+                                  background: 'white', border: '1px solid var(--border)',
+                                  borderRadius: 8, padding: '6px 14px', fontSize: 13,
+                                  color: 'var(--text-dark)', display: 'inline-flex', alignItems: 'center', gap: 6
+                                }}>
+                                  <span style={{ width: 6, height: 6, borderRadius: '50%', background: 'var(--green)' }} />
+                                  {opt.text}
+                                  {opt.count > 0 && (
+                                    <span style={{ color: 'var(--green-dark)', fontWeight: 600, fontSize: 11, marginLeft: 4 }}>
+                                      ({opt.count} votes)
+                                    </span>
+                                  )}
+                                </span>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{ marginTop: 16, display: 'flex', justifyContent: 'flex-end', gap: 10 }}>
+                        <a href={`/poll/${poll.shareToken}`} target="_blank" rel="noopener noreferrer"
+                          style={{
+                            fontSize: 13, color: 'var(--navy)', textDecoration: 'none', fontWeight: 600,
+                            display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px',
+                            borderRadius: 8, background: 'var(--bg)', border: '1px solid var(--border)'
+                          }}>
+                          Open Poll Preview ↗
+                        </a>
+                      </div>
+                    </div>
+                  )}
                 </div>
               )
             })}
